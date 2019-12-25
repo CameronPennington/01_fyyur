@@ -55,6 +55,15 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
 
+class Show(db.Model):
+  __tablename__= 'Show'
+
+  id = db.Column(db.Integer, primary_key=True)
+  start_time = db.Column(db.DateTime)
+  #add artist and venue foreign keys
+  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
+  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
+
 
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
