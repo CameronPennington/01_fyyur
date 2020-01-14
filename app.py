@@ -13,6 +13,7 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+from sqlalchemy.orm import relationship, backref
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -38,10 +39,10 @@ class Venue(db.Model):
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    genres = db.Column(db.String(30))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # DONE: implement any missing fields, as a database migration using Flask-Migrate
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -51,19 +52,18 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
+    genres = db.Column(db.String(30))
     facebook_link = db.Column(db.String(120))
 
 class Show(db.Model):
   __tablename__= 'Show'
 
-  id = db.Column(db.Integer, primary_key=True)
   start_time = db.Column(db.DateTime)
-  #add artist and venue foreign keys
-  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
-  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
-
+  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), primary_key=True)
+  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), primary_key=True)
+  artist = relationship(Artist, backref=backref("artist_assoc"))
+  venue = relationship(Venue, backref=backref("venue_assoc"))
+  image_link = db.Column(db.String(500))
 
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
@@ -429,6 +429,16 @@ def create_artist_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
 
+  artist = Artist(
+    name = request.form.get('name'),
+    city = request.form.get('city'),
+    state = request.form.get('state'),
+    phone = request.form.get('phone', ''),
+    genres = request.form.get('genres'),
+    facebook_link = request.form.get('facebook_link', '')
+  )
+  db.session.add(artist)
+  db.session.commit()
   # on successful db insert, flash success
   flash('Artist ' + request.form['name'] + ' was successfully listed!')
   # TODO: on unsuccessful db insert, flash an error instead.
