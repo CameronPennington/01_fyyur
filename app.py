@@ -443,7 +443,7 @@ def create_artist_submission():
     try:
       artist = Artist(
         name = request.form.get('name'),
-        city = request.form.get('city'),
+        city2 = request.form.get('city'),
         state = request.form.get('state'),
         phone = request.form.get('phone', ''),
         genres = request.form.get('genres'),
@@ -454,15 +454,17 @@ def create_artist_submission():
       # on successful db insert, flash success
       flash('Artist ' + request.form['name'] + ' was successfully listed!')
     # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    
     except:
       error = True
       db.session.rollback()
       print(sys.exc_info())
+      flash('An error occurred. Artist ' + request.form.get('name') + ' could not be listed.')
     finally:
       db.session.close()
     if error:
       abort(400)
+      
     else:
       return render_template('pages/home.html')
 
