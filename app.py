@@ -5,7 +5,7 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort
 from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
@@ -14,6 +14,7 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from sqlalchemy.orm import relationship, backref
+import sys
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -438,22 +439,32 @@ def create_artist_submission():
   # called upon submitting the new artist listing form
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
-
-  artist = Artist(
-    name = request.form.get('name'),
-    city = request.form.get('city'),
-    state = request.form.get('state'),
-    phone = request.form.get('phone', ''),
-    genres = request.form.get('genres'),
-    facebook_link = request.form.get('facebook_link', '')
-  )
-  db.session.add(artist)
-  db.session.commit()
-  # on successful db insert, flash success
-  flash('Artist ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
-  return render_template('pages/home.html')
+    error = False
+    try:
+      artist = Artist(
+        name = request.form.get('name'),
+        city = request.form.get('city'),
+        state = request.form.get('state'),
+        phone = request.form.get('phone', ''),
+        genres = request.form.get('genres'),
+        facebook_link = request.form.get('facebook_link', '')
+      )
+      db.session.add(artist)
+      db.session.commit()
+      # on successful db insert, flash success
+      flash('Artist ' + request.form['name'] + ' was successfully listed!')
+    # TODO: on unsuccessful db insert, flash an error instead.
+    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    except:
+      error = True
+      db.session.rollback()
+      print(sys.exc_info())
+    finally:
+      db.session.close()
+    if error:
+      abort(400)
+    else:
+      return render_template('pages/home.html')
 
 
 #  Shows
