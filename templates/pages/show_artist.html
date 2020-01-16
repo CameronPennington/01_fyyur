@@ -25,7 +25,8 @@
 		</p>
 		<p>
 			<i class="fab fa-facebook-f"></i> {% if artist.facebook_link %}<a href="{{ artist.facebook_link }}" target="_blank">{{ artist.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
-        </p>
+		</p>
+		<button class="btn btn-default btn-lg" data-id="{{ artist.id }}" id="edit-artist">Edit artist</button>
 		{% if artist.seeking_venue %}
 		<div class="seeking">
 			<p class="lead">Currently seeking performance venues</p>
@@ -71,6 +72,10 @@
 		{% endfor %}
 	</div>
 </section>
-
+<script>
+document.getElementById('edit-artist').onclick = function(e){
+	console.log(e)
+}
+</script>
 {% endblock %}
 
