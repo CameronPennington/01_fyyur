@@ -26,8 +26,10 @@
 		<p>
 			<i class="fab fa-facebook-f"></i> {% if artist.facebook_link %}<a href="{{ artist.facebook_link }}" target="_blank">{{ artist.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
 		</p>
-		<!--Button should get edit artist form-->
+		<!--Might not need data-id-->
 		<a href="/artists/{{artist.id}}/edit"><button class="btn btn-default btn-lg" data-id="{{ artist.id }}" id="edit-artist">Edit artist</button></a>
+		<!--Button should not link to another page, but rather send a request-->
+		<button class="btn btn-default btn-lg" data-id="{{ artist.id }}" id="delete-artist">Delete artist</button>
 		{% if artist.seeking_venue %}
 		<div class="seeking">
 			<p class="lead">Currently seeking performance venues</p>
@@ -74,8 +76,12 @@
 	</div>
 </section>
 <script>
-document.getElementById('edit-artist').onclick = function(e){
-	console.log(e)
+document.getElementById('delete-artist').onclick = function(e){
+	console.log(e.target.dataset)
+	const artist_id = e.target.dataset['id']
+	fetch(artist_id, {
+		method: 'DELETE'
+	})
 }
 </script>
 {% endblock %}
