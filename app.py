@@ -64,7 +64,14 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean, default = False)
     seeking_description = db.Column(db.String(500))
     image_link = db.Column(db.String(500), nullable = True)
-    
+    shows = db.relationship('Show', backref='artist', lazy = True)
+
+    @property
+    def past_shows(self):
+      now = datetime.now()
+      past_shows = [x for x in self.shows if datetime.strptime(
+        x.start_time, '%Y-%m-%d %H:%M:%S') < now]
+      return past_shows
 
 class Show(db.Model):
   __tablename__= 'Show'
@@ -384,6 +391,7 @@ def show_artist(artist_id):
   # }
   # data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
   data = Artist.query.get(artist_id)
+  print(data.past_shows)
  
   return render_template('pages/show_artist.html', artist=data)
 
