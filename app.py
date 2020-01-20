@@ -73,6 +73,10 @@ class Artist(db.Model):
         x.start_time, '%Y-%m-%d %H:%M:%S') < now]
       return past_shows
 
+    @property
+    def past_shows_count(self):
+      return len(self.past_shows)
+
 class Show(db.Model):
   __tablename__= 'Show'
 
@@ -391,8 +395,6 @@ def show_artist(artist_id):
   # }
   # data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
   data = Artist.query.get(artist_id)
-  print(data.past_shows)
- 
   return render_template('pages/show_artist.html', artist=data)
 
 #  Update
