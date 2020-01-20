@@ -461,6 +461,11 @@ def create_artist_submission():
   # TODO: modify data to be the data object returned from db insertion
     error = False
     try:
+      if request.form.get('seeking_venue') == 'y':
+        seeking_venue = True
+      else:
+        seeking_venue = False
+
       artist = Artist(
         name = request.form.get('name'),
         city = request.form.get('city'),
@@ -470,7 +475,7 @@ def create_artist_submission():
         facebook_link = request.form.get('facebook_link', ''),
         image_link = request.form.get('image_link', ''),
         website = request.form.get('website', ''),
-        seeking_venue = request.form.get('seeking_venue', False),
+        seeking_venue = seeking_venue,
         seeking_description = request.form.get('seeking_description', '')
       )
       db.session.add(artist)
