@@ -41,7 +41,7 @@ class Venue(db.Model):
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
     facebook_link = db.Column(db.String(120))
-    genres = db.Column(db.String(30))
+    genres = db.Column(db.ARRAY(db.String()))
 
     # DONE: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -53,7 +53,7 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(30))
+    genres = db.Column(db.ARRAY(db.String()))
     facebook_link = db.Column(db.String(120))
 
 class Show(db.Model):
@@ -244,7 +244,7 @@ def create_venue_submission():
       state = request.form.get('state'),
       address = request.form.get('address'),
       phone = request.form.get('phone', ''),
-      genres = request.form.get('genres'),
+      genres = request.form.getlist('genres'),
       facebook_link = request.form.get('facebook_link', ''),
     )
     db.session.add(venue)
@@ -376,6 +376,7 @@ def show_artist(artist_id):
   # }
   # data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
   data = Artist.query.get(artist_id)
+ 
   return render_template('pages/show_artist.html', artist=data)
 
 #  Update
@@ -400,7 +401,7 @@ def edit_artist_submission(artist_id):
     artist.city = request.form.get('city'),
     artist.state = request.form.get('state'),
     artist.hone = request.form.get('phone', ''),
-    artist.genres = request.form.get('genres'),
+    artist.genres = request.form.getlist('genres'),
     artist.facebook_link = request.form.get('facebook_link', '')
     db.session.commit()
   except:
@@ -447,7 +448,7 @@ def create_artist_submission():
         city = request.form.get('city'),
         state = request.form.get('state'),
         phone = request.form.get('phone', ''),
-        genres = request.form.get('genres'),
+        genres = request.form.getlist('genres'),
         facebook_link = request.form.get('facebook_link', '')
       )
       db.session.add(artist)
