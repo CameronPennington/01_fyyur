@@ -48,7 +48,27 @@ class Venue(db.Model):
     shows = db.relationship('Show', backref='venue', lazy = True)
     genres = db.Column(db.ARRAY(db.String()))
 
-    # DONE: implement any missing fields, as a database migration using Flask-Migrate
+    @property
+    def past_shows(self):
+      now = datetime.now()
+      past_shows = [x for x in self.shows if datetime.strptime(
+        x.start_time, '%Y-%m-%d %H:%M:%S') < now]
+      return past_shows
+
+    @property
+    def past_shows_count(self):
+      return len(self.past_shows)
+
+    @property
+    def upcoming_shows(self):
+      now = datetime.now()
+      upcoming_shows = [x for x in self.shows if datetime.strptime(
+        x.start_time, '%Y-%m-%d %H:%M:%S') > now]
+      return upcoming_shows
+
+    @property
+    def upcoming_shows_count(self):
+      return len(self.upcoming_shows)
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -131,27 +151,35 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
+  # data=[{
+  #   "city": "San Francisco",
+  #   "state": "CA",
+  #   "venues": [{
+  #     "id": 1,
+  #     "name": "The Musical Hop",
+  #     "num_upcoming_shows": 0,
+  #   }, {
+  #     "id": 3,
+  #     "name": "Park Square Live Music & Coffee",
+  #     "num_upcoming_shows": 1,
+  #   }]
+  # }, {
+  #   "city": "New York",
+  #   "state": "NY",
+  #   "venues": [{
+  #     "id": 2,
+  #     "name": "The Dueling Pianos Bar",
+  #     "num_upcoming_shows": 0,
+  #   }]
+  # }]
+
+  unique_cs = Venue.query.with_entities(
+    Venue.city, Venue.state).distinct().all()
+  data = []
+  for cs in unique_cs:
+    venues = Venue.query.filter_by(city=cs[0], state=cs[1]).all()
+    data.append({'city': cs[0], 'state': cs[1], 'venues': venues})
+
   return render_template('pages/venues.html', areas=data);
 
 @app.route('/venues/search', methods=['POST'])
