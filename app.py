@@ -414,13 +414,23 @@ def edit_artist_submission(artist_id):
   # artist record with ID <artist_id> using the new attributes
   error = False
   try:
+
+    if request.form.get('seeking_venue') == 'y':
+      seeking_venue = True
+    else:
+      seeking_venue = False
+
     artist=Artist.query.get(artist_id)
     artist.name = request.form.get('name'),
     artist.city = request.form.get('city'),
     artist.state = request.form.get('state'),
-    artist.hone = request.form.get('phone', ''),
+    artist.phone = request.form.get('phone', ''),
     artist.genres = request.form.getlist('genres'),
     artist.facebook_link = request.form.get('facebook_link', '')
+    artist.image_link = request.form.get('image_link', ''),
+    artist.website = request.form.get('website', ''),
+    artist.seeking_venue = seeking_venue,
+    artist.seeking_description = request.form.get('seeking_description', '')
     db.session.commit()
   except:
     error = True
