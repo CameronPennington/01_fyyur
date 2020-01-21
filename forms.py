@@ -122,8 +122,8 @@ class VenueForm(Form):
     seeking_talent = BooleanField(
         'seeking_talent'
     )
-    seeking_venue = StringField(
-        'seeking_venue'
+    seeking_description = StringField(
+        'seeking_description'
     )
 
 class ArtistForm(Form):
