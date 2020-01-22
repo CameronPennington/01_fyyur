@@ -14,6 +14,7 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy import func
 import sys
 #----------------------------------------------------------------------------#
 # App Config.
@@ -164,13 +165,12 @@ def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  venues = Venue.query.filter(func.lower(Venue.name).contains(
+    request.form.get('search_term').lower())).all()
+  
   response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+    "count": len(venues),
+    "data": venues
   }
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
@@ -242,7 +242,7 @@ def delete_venue(venue_id):
     finally:
       db.session.close()
     #redirect after delete not working
-    return render_template('pages/home.html')
+    return redirect(url_for('index'))
 
 #  Artists
 #  ----------------------------------------------------------------
