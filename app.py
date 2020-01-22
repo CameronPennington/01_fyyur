@@ -176,8 +176,7 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
+
   data = Venue.query.get(venue_id)
   return render_template('pages/show_venue.html', venue=data)
 
@@ -196,6 +195,11 @@ def create_venue_submission():
   error = False
   try:
 
+    if request.form.get('seeking_talent') == 'y':
+      seeking_talent = True
+    else:
+      seeking_talent = False
+
     venue = Venue(
       name = request.form.get('name'),
       city = request.form.get('city'),
@@ -204,6 +208,9 @@ def create_venue_submission():
       phone = request.form.get('phone', ''),
       genres = request.form.getlist('genres'),
       facebook_link = request.form.get('facebook_link', ''),
+      website = request.form.get('website', ''),
+      seeking_talent = seeking_talent,
+      seeking_description = request.form.get('seeking_description', '')
     )
     db.session.add(venue)
     db.session.commit()
@@ -320,6 +327,8 @@ def edit_venue(venue_id):
 def edit_venue_submission(venue_id):
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
+
+
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
