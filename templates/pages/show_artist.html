@@ -77,7 +77,7 @@
 </section>
 <script>
 document.getElementById('delete-artist').onclick = function(e){
-	console.log(e.target.dataset)
+	
 	const artist_id = e.target.dataset['id']
 	fetch(artist_id, {
 		method: 'DELETE'
