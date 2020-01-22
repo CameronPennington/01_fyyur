@@ -327,9 +327,37 @@ def edit_venue(venue_id):
 def edit_venue_submission(venue_id):
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
+  error = False
+  try:
 
-
-  return redirect(url_for('show_venue', venue_id=venue_id))
+    if request.form.get('seeking_talent') == 'y':
+      seeking_talent = True
+    else:
+      seeking_talent = False
+  
+    venue=Venue.query.get(venue_id)
+    venue.name = request.form.get('name')
+    venue.city = request.form.get('city')
+    venue.state = request.form.get('state')
+    venue.address = request.form.get('address', '')
+    venue.phone = request.form.get('phone', '')
+    venue.genres = request.form.getlist('genres')
+    venue.facebook_link = request.form.get('facebook_link', '')
+    venue.image_link = request.form.get('image_link', '')
+    venue.website = request.form.get('website', '')
+    venue.seeking_talent = seeking_talent
+    venue.seeking_description = request.form.get('seeking_description', '')
+    db.session.commit()
+  except:
+    error = True
+    db.session.rollback()
+    print(sys.exc_info)
+  finally:
+    db.session.close()
+  if error:
+    return flash('An error occurred. Artist ' + request.form.get('name') + ' could not be edited.')
+  else:
+    return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
 #  ----------------------------------------------------------------
