@@ -117,10 +117,15 @@ class Show(db.Model):
   artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable = False)
   venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable = False)
 
+  @property
+  def venue_name(self):
+    venue = Venue.query.get(self.venue_id)
+    return venue.name
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+  @property
+  def artist_name(self):
+    artist = Artist.query.get(self.artist_id)
+    return artist.name
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -427,9 +432,7 @@ def delete_artist(artist_id):
 
 @app.route('/shows')
 def shows():
-  # displays list of shows at /shows
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
+
   data=Show.query.order_by('id').all()
   return render_template('pages/shows.html', shows=data)
 
